@@ -1,0 +1,6 @@
+apache-airflow-providers-mongo==3.0.0
+apache-airflow[kubernetes]
+pendulum
+yfinance
+pandas_ta
+sklearn
