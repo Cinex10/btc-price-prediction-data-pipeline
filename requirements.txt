@@ -1,6 +1,8 @@
 apache-airflow-providers-mongo==3.0.0
 apache-airflow[kubernetes]
 pendulum
-yfinance
-pandas_ta
-sklearn
+yfinance==0.2.26
+pandas_ta==0.3.14b0
+scikit-learn
+tensorflow==2.12.0
+numpy==1.25.2

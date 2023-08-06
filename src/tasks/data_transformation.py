@@ -1,23 +1,25 @@
 from utils.logger import logging
 import pandas as pd
 from  utils.data_manager import DataManager
+from config.config import *
 
 
 
-def preprocess_data(path):
-    logging.info(f'Reading data from {path}')
-    df = pd.read_csv(path,index_col='Date')
+def preprocess_data(manager:DataManager,source=raw_data_path,output=processed_data_path,split=True):
+    logging.info(f'Reading data from {source}')
+    df = pd.read_csv(source,index_col='Date')
     logging.info(f'Initialize DataManager instance')
-    manager = DataManager(target='Close_SMA_pct_change',val_threshold=0.1,train_threshold=0.2)
     logging.info(f'Starting preprocess pipe')
-    # df = manager.calcualte_ti(df,column='Close')
-    df = (df.pipe(manager.calcualte_ti,column='Close')
-            .pipe(manager.drop_columns,columns=['Dividends','Stock Splits','Close','Open','Low','High','Volume'])
-            .pipe(manager.calculate_percentage_change,columns=df.columns)
-            .pipe(manager.drop_columns,columns=['Close_RSI','Close_EMAF','Close_EMAM','Close_EMAS','Close_MACD','Close_MACD_Signal','Close_MACD_Histogram'])
-            .pipe(manager.dropna)
-            .pipe(manager.minmax_scaling,columns=df.columns)
-        )
+    manager.dataframe_transformation(df)
     logging.info(f'End of preprocess pipe')
-    df.to_csv(path)
-    logging.info(f'Data saved as a csv file in {path}')    
+    df.to_csv(output)
+    logging.info(f'Data saved as a csv file in {output}')
+    
+    if(split):
+        logging.info(f'Splitting the data into train, validation and test sets')
+        df_train,df_val,df_test = manager.split_data(df)
+        df_train.to_csv(train_data_path)    
+        df_val.to_csv(val_data_path)    
+        df_test.to_csv(test_data_path)    
+    
+
